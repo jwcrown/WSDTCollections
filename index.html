@@ -2,12 +2,38 @@
 <html lang="en">
 <head>
     <title>Document</title>
+    <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css">    
     <script src="bower_components/jquery/dist/jquery.js"></script>    
     <script src="bower_components/underscore/underscore.js"></script>
     <script src="bower_components/backbone/backbone.js"></script>
-    <script src="js/scripts.js"></script>    
 </head>
 <body>
-    
+    <div class="jumbotron text-center">
+        <h1>My Commute</h1>
+    </div>
+    <br>
+    <div class="container">
+        <div class="col-12">
+            <table class="table table-bordered table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th>Description:</th>
+                        <th>Distance:</th>
+                        <th>Current Time:</th>
+                        <th>Average Time:</th>
+                    </tr>
+                </thead>
+                <tbody id="output"></tbody>
+                <script id="RouteTemplate" type="text/template">
+                    <td><span><%= Description %></span></td>
+                    <td><span><%= Distance %> mi.</span></td>
+                    <td><span><%= CurrentTime %> min.</span></td>
+                    <td><span><%= AverageTime %> min.</span></td>
+                </script>
+            </table>
+        </div>
+    </div>
+    <a href="#/traffic">WSDOT</a>
 </body>
+<script src="js/scripts.js"></script>
 </html>

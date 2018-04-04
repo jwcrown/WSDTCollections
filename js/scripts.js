@@ -1,25 +1,71 @@
 //backbone model
-var TravelTimeModel = Backbone.Model.extend({
+var RouteModel = Backbone.Model.extend({
     defaults:{
+        Description: null,
+        AverageTime: null,
+        CurrentTime: null,
+        Distance: null,
+        EndPoint: null,
+        Name: null,
+        StartPoint: null,
+        TimeUpdated: null,
+        TravelTimeID: null,
     }
 });
 
 //backbone collection
-var TravelTimeCollection = Backbone.Collection.extend({
-    model: TravelTimeModel,
-    url: "http://wsdot.com/Traffic/api/TravelTimes/TravelTimesREST.svc/GetTravelTimesAsJson?AccessCode=e901f9a2-936d-49fb-90a7-304f89fb5431",
+var RouteCollection = Backbone.Collection.extend({
+    model: RouteModel,
+    url: "http://wsdot.com/Traffic/api/TravelTimes/TravelTimesREST.svc/GetTravelTimesAsJson?AccessCode=e901f9a2-936d-49fb-90a7-304f89fb5431"
 });
 
-var travelTimes = new TravelTimeCollection();
-
-travelTimes.fetch()
-.then(function(){
-    _.each(travelTimes.models, function(b){
-        console.log(b.attributes);//The travelTimes collection
-    })
-    console.log(travelTimes.models.length)//The length of the travelTimes collection
-    console.log(travelTimes.models[30].attributes)//The 30th model in the list
-    console.log("Current time from " + _.first(travelTimes.models).attributes.Description + " is: " + _.first(travelTimes.models).attributes.CurrentTime + " minutes.")//The CurrentTime of the first model
-    console.log(_.filter(travelTimes.models, function(time){ return time.attributes.CurrentTime == 10 }))//All the models with a CurrentTime of 10
-    console.log(_.find(travelTimes.models, function(time){ return time.attributes.Name == "Bellevue-Seattle via 520 (WB PM)"}))//The first model with the Name: "Bellevue-Seattle via 520 (WB PM)"
+//model view
+var RouteView = Backbone.View.extend({
+    tagName: 'tr',
+    template: _.template($('#RouteTemplate').html()),
+    initialize: function(){
+        this.render();
+    },
+    render: function(){
+        this.$el.html(this.template(this.model.toJSON()));
+        return this;
+    }
 });
+
+
+//collection view
+var RouteListView = Backbone.View.extend({
+    el: '#output',
+    render: function(){
+        this.$el.empty();
+        this.collection.each(function(route){
+            var routeView = new RouteView({model: route});
+            this.$el.append(routeView.render().$el);
+          }, this);
+          return this;
+    },
+    initialize: function(){
+        this.listenTo(this.collection, 'sync', this.render);        
+    }
+});
+
+var TrafficRouter = Backbone.Router.extend({
+    routes: {
+      'traffic': 'renderTraffic',
+      '*default': 'renderTraffic'
+    },
+    renderTraffic: function(){
+        routes.fetch()
+    }
+});
+
+
+// instantiate a collection
+var routes = new RouteCollection();
+// routes = _.sortBy(routes, 'Description');
+
+
+// instantiate a collectionView
+var routesView = new RouteListView({collection: routes});
+var TRouter = new TrafficRouter();
+Backbone.history.start();
